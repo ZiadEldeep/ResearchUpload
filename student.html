@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            margin: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+        label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+        input[type="text"],
+        input[type="file"],
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+        }
+        input[type="text"]:focus,
+        input[type="file"]:focus,
+        button:hover {
+            border-color: #3b7bff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(59, 123, 255, 0.4);
+        }
+        input[type="text"] {
+            background-color: #f9f9f9;
+        }
+        input[type="file"] {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Student Information Form</h2>
+
+        <!-- Alert message -->
+        <div id="alertMessage" class="alert"></div>
+
+        <form id="studentForm">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+            <label for="details">Other Details</label>
+            <input type="text" id="details" name="details" placeholder="Enter other details" required>
+
+            <label for="research">Research Paper</label>
+            <input type="file" id="research" name="research" accept=".pdf, .doc, .docx" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('studentForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent form submission
+
+            // Get the form input values
+            const name = document.getElementById('name').value;
+            const details = document.getElementById('details').value;
+            const researchFile = document.getElementById('research').files[0];
+
+            // Check if a file is uploaded
+            if (researchFile) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    // Get the file content as base64
+                    const fileContent = reader.result.split(',')[1];
+
+                    // Create an object to store in localStorage
+                    const studentData = {
+                        name: name,
+                        details: details,
+                        research: {
+                            name: researchFile.name,
+                            type: researchFile.type,
+                            size: researchFile.size,
+                            content: fileContent
+                        }
+                    };
+
+                    // Store the data in localStorage (you can store multiple students if needed)
+                    let students = JSON.parse(localStorage.getItem('students')) || [];
+                    students.push(studentData);
+                    localStorage.setItem('students', JSON.stringify(students));
+
+                    // Show success alert
+                    showAlert('Student data saved successfully!', 'success');
+                    document.getElementById('studentForm').reset(); // Clear the form
+                };
+
+                reader.readAsDataURL(researchFile); // Convert file to base64 format
+            } else {
+                showAlert('Please upload a research file.', 'error');
+            }
+        });
+
+        // Function to show alert messages
+        function showAlert(message, type) {
+            const alertElement = document.getElementById('alertMessage');
+            alertElement.textContent = message;
+            alertElement.style.display = 'block';
+            alertElement.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
+            alertElement.style.color = type === 'error' ? '#721c24' : '#155724';
+        }
+    </script>
+</body>
+</html>

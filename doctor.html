@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Students Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Information</h2>
+
+    <!-- Alert message -->
+    <div id="alertMessage" class="alert"></div>
+
+    <table id="studentsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Other Details</th>
+                <th>Research Paper</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Student data will be dynamically inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Function to load the students data from localStorage
+    function loadStudentsData() {
+        const students = JSON.parse(localStorage.getItem('students'));
+
+        if (students && students.length > 0) {
+            const tableBody = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear any existing rows
+
+            students.forEach((student, index) => {
+                // Create a new row
+                const row = tableBody.insertRow();
+                
+                // Name cell
+                const nameCell = row.insertCell(0);
+                nameCell.textContent = student.name;
+                
+                // Details cell
+                const detailsCell = row.insertCell(1);
+                detailsCell.textContent = student.details;
+
+                // Research file cell
+                const fileCell = row.insertCell(2);
+                fileCell.textContent = student.research.name;
+
+                // Download button cell
+                const actionCell = row.insertCell(3);
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download';
+                downloadButton.onclick = function() {
+                    downloadFile(student.research);
+                };
+                actionCell.appendChild(downloadButton);
+            });
+        } else {
+            showAlert('No student data found.', 'error');
+        }
+    }
+
+    // Function to handle file download
+    function downloadFile(research) {
+        const fileContent = research.content;
+        const blob = new Blob([new Uint8Array(atob(fileContent).split("").map(function(c) { return c.charCodeAt(0); }))], { type: research.type });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = research.name;
+        link.click();
+    }
+
+    // Function to show alert messages
+    function showAlert(message, type) {
+        const alertElement = document.getElementById('alertMessage');
+        alertElement.textContent = message;
+        alertElement.style.display = 'block';
+        alertElement.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
+        alertElement.style.color = type === 'error' ? '#721c24' : '#155724';
+    }
+
+    // Load student data when the page is loaded
+    window.onload = loadStudentsData;
+</script>
+
+</body>
+</html>
