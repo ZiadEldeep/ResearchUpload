@@ -65,6 +65,18 @@
             border-radius: 5px;
             display: none;
         }
+        .form-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .input-field {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -75,12 +87,20 @@
     <!-- Alert message -->
     <div id="alertMessage" class="alert"></div>
 
+    <!-- Add Degree Form -->
+    <div class="form-container">
+        <input type="text" id="degreeInput" class="input-field" placeholder="Enter Degree" />
+        <button onclick="addDegree()">Add Degree</button>
+    </div>
+
     <table id="studentsTable">
         <thead>
             <tr>
+                <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()"></th> <!-- Checkbox for select all -->
                 <th>Name</th>
                 <th>Other Details</th>
                 <th>Research Paper</th>
+                <th>Degree</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -88,14 +108,16 @@
             <!-- Student data will be dynamically inserted here -->
         </tbody>
     </table>
+
+    <button onclick="deleteSelected()">Delete Selected</button> <!-- Button to delete selected students -->
 </div>
 
 <script>
     // Function to load the students data from localStorage
     function loadStudentsData() {
-        const students = JSON.parse(localStorage.getItem('students'));
+        const students = JSON.parse(localStorage.getItem('students')) || [];
 
-        if (students && students.length > 0) {
+        if (students.length > 0) {
             const tableBody = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
             tableBody.innerHTML = ''; // Clear any existing rows
 
@@ -103,20 +125,32 @@
                 // Create a new row
                 const row = tableBody.insertRow();
                 
+                // Checkbox cell
+                const checkboxCell = row.insertCell(0);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'student-checkbox';
+                checkbox.dataset.index = index; // Store the student index in the checkbox
+                checkboxCell.appendChild(checkbox);
+                
                 // Name cell
-                const nameCell = row.insertCell(0);
+                const nameCell = row.insertCell(1);
                 nameCell.textContent = student.name;
                 
                 // Details cell
-                const detailsCell = row.insertCell(1);
+                const detailsCell = row.insertCell(2);
                 detailsCell.textContent = student.details;
 
                 // Research file cell
-                const fileCell = row.insertCell(2);
+                const fileCell = row.insertCell(3);
                 fileCell.textContent = student.research.name;
 
-                // Download button cell
-                const actionCell = row.insertCell(3);
+                // Degree cell
+                const degreeCell = row.insertCell(4);
+                degreeCell.textContent = student.degree || 'N/A';
+
+                // Action cell
+                const actionCell = row.insertCell(5);
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.onclick = function() {
@@ -137,6 +171,75 @@
         link.href = URL.createObjectURL(blob);
         link.download = research.name;
         link.click();
+    }
+
+    // Function to add a degree to the selected student
+    function addDegree() {
+        const degreeInput = document.getElementById('degreeInput');
+        const degree = degreeInput.value.trim();
+
+        if (degree === '') {
+            showAlert('Please enter a degree.', 'error');
+            return;
+        }
+
+        // Get the student data from localStorage
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+
+        // Get selected checkboxes
+        const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+        if (selectedCheckboxes.length === 0) {
+            showAlert('Please select at least one student.', 'error');
+            return;
+        }
+
+        selectedCheckboxes.forEach(checkbox => {
+            const studentIndex = checkbox.dataset.index;
+            students[studentIndex].degree = degree;
+        });
+
+        // Save the updated students array back to localStorage
+        localStorage.setItem('students', JSON.stringify(students));
+
+        // Reload the data to reflect the changes
+        loadStudentsData();
+
+        // Clear the input field
+        degreeInput.value = '';
+        showAlert('Degree added successfully!', 'success');
+    }
+
+    // Function to delete selected students
+    function deleteSelected() {
+        // Get selected checkboxes
+        const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+        if (selectedCheckboxes.length === 0) {
+            showAlert('Please select at least one student to delete.', 'error');
+            return;
+        }
+
+        // Get the student data from localStorage
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+
+        // Remove selected students
+        const remainingStudents = students.filter((student, index) => {
+            return !Array.from(selectedCheckboxes).some(checkbox => checkbox.dataset.index == index);
+        });
+
+        // Save the updated students array back to localStorage
+        localStorage.setItem('students', JSON.stringify(remainingStudents));
+
+        // Reload the data to reflect the changes
+        loadStudentsData();
+
+        showAlert('Selected students deleted successfully!', 'success');
+    }
+
+    // Function to toggle all checkboxes
+    function selectAllCheckboxes() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
     }
 
     // Function to show alert messages
