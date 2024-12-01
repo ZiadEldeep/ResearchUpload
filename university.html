@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctors</title>
+    <title>University</title>
     <style>
         * {
             margin: 0;
@@ -98,12 +98,26 @@
             justify-content: flex-end;
             width: 100%;
         }
+
+        /* Star rating styling */
+        .star-rating {
+            display: flex;
+            gap: 5px;
+        }
+        .star {
+            font-size: 20px;
+            cursor: pointer;
+            color: #ddd;
+        }
+        .star.selected {
+            color: #f39c12;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Doctors Site</h2>
+    <h2>University Site</h2>
 
     <!-- Add Degree Form -->
     <div class="form-container">
@@ -127,6 +141,7 @@
                 <th>Other Details</th>
                 <th>Research Paper</th>
                 <th>Degree</th>
+                <th>Rating</th> <!-- New column for rating -->
                 <th>Action</th>
             </tr>
         </thead>
@@ -175,8 +190,13 @@
                 const degreeCell = row.insertCell(4);
                 degreeCell.textContent = student.degree || 'N/A';
 
+                // Rating cell
+                const ratingCell = row.insertCell(5);
+                const starRating = createStarRating(student.rating || 0, index);
+                ratingCell.appendChild(starRating);
+
                 // Action cell
-                const actionCell = row.insertCell(5);
+                const actionCell = row.insertCell(6);
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.onclick = function() {
@@ -187,6 +207,33 @@
         } else {
             showAlert('No student data found.', 'error');
         }
+    }
+
+    // Function to create a star rating for a student
+    function createStarRating(rating, studentIndex) {
+        const starContainer = document.createElement('div');
+        starContainer.className = 'star-rating';
+        
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.className = 'star';
+            star.innerHTML = '★';
+            if (i <= rating) {
+                star.classList.add('selected');
+            }
+            star.onclick = () => setRating(studentIndex, i);
+            starContainer.appendChild(star);
+        }
+
+        return starContainer;
+    }
+
+    // Function to set the rating for a student
+    function setRating(studentIndex, rating) {
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+        students[studentIndex].rating = rating;
+        localStorage.setItem('students', JSON.stringify(students));
+        loadStudentsData(); // Reload to display the updated ratings
     }
 
     // Function to handle file download
