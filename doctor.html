@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctors</title>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,86 +15,88 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f7fa;
-            padding: 20px;
+            padding: 40px 20px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         h2 {
             text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 32px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         th, td {
-            padding: 12px;
+            padding: 14px 20px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #ececec;
+            font-size: 16px;
         }
         th {
-            background-color: #4CAF50;
+            background-color: #2ecc71;
             color: white;
         }
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: #ecfdf1;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #2ecc71;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #27ae60;
         }
         .alert {
             background-color: #f8d7da;
             color: #721c24;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 25px;
             border: 1px solid #f5c6cb;
-            border-radius: 5px;
+            border-radius: 8px;
             display: none;
         }
         .form-container {
-            margin-bottom: 30px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 25px;
         }
         .input-field {
-            padding: 8px;
-            font-size: 14px;
+            padding: 10px;
+            font-size: 16px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
         }
-        /* Main Page button style */
         .main-page-btn {
-            background-color: #dc3545; /* Danger color (red) */
+            background-color: #e74c3c;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-align: center;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 20px;
-            width: 200px;
-            display: inline-block; /* Keeps the button inline with the form */
+            margin-top: 30px;
+            width: 180px;
+            display: inline-block;
         }
         .main-page-btn:hover {
-            background-color: #c82333; /* Darker red on hover */
+            background-color: #c0392b;
         }
-
         .form-container-right {
             display: flex;
             justify-content: flex-end;
@@ -108,12 +112,12 @@
     <!-- Add Degree Form -->
     <div class="form-container">
         <input type="text" id="degreeInput" class="input-field" placeholder="Enter Degree" />
-        <button onclick="addDegree()">Add Degree</button>
+        <button onclick="addDegree()"><i class="fas fa-plus-circle"></i> Add Degree</button>
     </div>
 
     <!-- Main Page Button aligned to the right -->
     <div class="form-container-right">
-        <a href="home.html" class="main-page-btn">Main Page</a> <!-- This links to home.php -->
+        <a href="index.html" class="main-page-btn"><i class="fas fa-home"></i> Main Page</a>
     </div>
 
     <!-- Alert message -->
@@ -122,7 +126,7 @@
     <table id="studentsTable">
         <thead>
             <tr>
-                <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()"></th> <!-- Checkbox for select all -->
+                <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()"></th>
                 <th>Name</th>
                 <th>Other Details</th>
                 <th>Research Paper</th>
@@ -135,7 +139,7 @@
         </tbody>
     </table>
 
-    <button onclick="deleteSelected()">Delete Selected</button> <!-- Button to delete selected students -->
+    <button onclick="deleteSelected()"><i class="fas fa-trash-alt"></i> Delete Selected</button>
 </div>
 
 <script>
@@ -178,14 +182,14 @@
                 // Action cell
                 const actionCell = row.insertCell(5);
                 const downloadButton = document.createElement('button');
-                downloadButton.textContent = 'Download';
+                downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
                 downloadButton.onclick = function() {
                     downloadFile(student.research);
                 };
                 actionCell.appendChild(downloadButton);
             });
         } else {
-            showAlert('No student data found.', 'error');
+            showAlert('No student data found. 😕', 'error');
         }
     }
 
@@ -205,7 +209,7 @@
         const degree = degreeInput.value.trim();
 
         if (degree === '') {
-            showAlert('Please enter a degree.', 'error');
+            showAlert('Please enter a degree. ❗', 'error');
             return;
         }
 
@@ -215,7 +219,7 @@
         // Get selected checkboxes
         const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
         if (selectedCheckboxes.length === 0) {
-            showAlert('Please select at least one student.', 'error');
+            showAlert('Please select at least one student. ❗', 'error');
             return;
         }
 
@@ -232,7 +236,7 @@
 
         // Clear the input field
         degreeInput.value = '';
-        showAlert('Degree added successfully!', 'success');
+        showAlert('Degree added successfully! ✅', 'success');
     }
 
     // Function to delete selected students
@@ -240,7 +244,7 @@
         // Get selected checkboxes
         const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
         if (selectedCheckboxes.length === 0) {
-            showAlert('Please select at least one student to delete.', 'error');
+            showAlert('Please select at least one student to delete. ❗', 'error');
             return;
         }
 
@@ -258,7 +262,7 @@
         // Reload the data to reflect the changes
         loadStudentsData();
 
-        showAlert('Selected students deleted successfully!', 'success');
+        showAlert('Selected students deleted successfully! 🗑️', 'success');
     }
 
     // Function to toggle all checkboxes

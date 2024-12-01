@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -11,55 +12,60 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
-            padding: 20px;
+            font-family: 'Helvetica', Arial, sans-serif;
+            background-color: #e5e5e5;
+            padding: 30px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: auto;
-            background-color: #fff;
-            padding: 30px;
+            background-color: #ffffff;
+            padding: 40px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         h2 {
             text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 40px;
+            color: #2e3d49;
+            font-size: 2.2em;
+            font-weight: bold;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #4CAF50;
+            background-color: #3b8a7f;
             color: white;
+            font-size: 1.1em;
         }
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: #f7fafc;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #3b8a7f;
             color: white;
-            padding: 8px 16px;
+            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #336c56;
         }
         .alert {
             background-color: #f8d7da;
             color: #721c24;
-            padding: 10px;
+            padding: 15px;
             margin-bottom: 20px;
             border: 1px solid #f5c6cb;
             border-radius: 5px;
@@ -69,28 +75,28 @@
             margin-bottom: 30px;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
         }
         .input-field {
-            padding: 8px;
-            font-size: 14px;
+            padding: 12px;
+            font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            width: 300px;
         }
-        /* Main Page button style */
         .main-page-btn {
-            background-color: #dc3545; /* Danger color (red) */
+            background-color: #d9534f;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             text-align: center;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 20px;
-            width: 200px;
-            display: inline-block; /* Keeps the button inline with the form */
+            width: 180px;
+            display: inline-block;
+            font-size: 1em;
         }
         .main-page-btn:hover {
-            background-color: #c82333; /* Darker red on hover */
+            background-color: #c9302c;
         }
 
         .form-container-right {
@@ -99,35 +105,45 @@
             width: 100%;
         }
 
-        /* Star rating styling */
         .star-rating {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
         .star {
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
             color: #ddd;
         }
         .star.selected {
             color: #f39c12;
         }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .form-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .input-field {
+                width: 80%;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>University Site</h2>
+    <h2>University Site <span role="img" aria-label="university emoji">🏫</span></h2>
 
     <!-- Add Degree Form -->
     <div class="form-container">
         <input type="text" id="degreeInput" class="input-field" placeholder="Enter Degree" />
-        <button onclick="addDegree()">Add Degree</button>
+        <button onclick="addDegree()"><i class="fas fa-plus-circle"></i> Add Degree</button>
     </div>
 
     <!-- Main Page Button aligned to the right -->
     <div class="form-container-right">
-        <a href="home.html" class="main-page-btn">Main Page</a> <!-- This links to home.php -->
+        <a href="index.html" class="main-page-btn"><i class="fas fa-home"></i> Main Page</a>
     </div>
 
     <!-- Alert message -->
@@ -136,12 +152,12 @@
     <table id="studentsTable">
         <thead>
             <tr>
-                <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()"></th> <!-- Checkbox for select all -->
+                <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()" aria-label="Select All"></th>
                 <th>Name</th>
                 <th>Other Details</th>
                 <th>Research Paper</th>
                 <th>Degree</th>
-                <th>Rating</th> <!-- New column for rating -->
+                <th>Rating <span role="img" aria-label="star emoji">⭐</span></th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -150,11 +166,10 @@
         </tbody>
     </table>
 
-    <button onclick="deleteSelected()">Delete Selected</button> <!-- Button to delete selected students -->
+    <button onclick="deleteSelected()"><i class="fas fa-trash-alt"></i> Delete Selected</button>
 </div>
 
 <script>
-    // Function to load the students data from localStorage
     function loadStudentsData() {
         const students = JSON.parse(localStorage.getItem('students')) || [];
 
@@ -198,7 +213,7 @@
                 // Action cell
                 const actionCell = row.insertCell(6);
                 const downloadButton = document.createElement('button');
-                downloadButton.textContent = 'Download';
+                downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
                 downloadButton.onclick = function() {
                     downloadFile(student.research);
                 };
@@ -209,7 +224,6 @@
         }
     }
 
-    // Function to create a star rating for a student
     function createStarRating(rating, studentIndex) {
         const starContainer = document.createElement('div');
         starContainer.className = 'star-rating';
@@ -228,7 +242,6 @@
         return starContainer;
     }
 
-    // Function to set the rating for a student
     function setRating(studentIndex, rating) {
         const students = JSON.parse(localStorage.getItem('students')) || [];
         students[studentIndex].rating = rating;
@@ -236,7 +249,6 @@
         loadStudentsData(); // Reload to display the updated ratings
     }
 
-    // Function to handle file download
     function downloadFile(research) {
         const fileContent = research.content;
         const blob = new Blob([new Uint8Array(atob(fileContent).split("").map(function(c) { return c.charCodeAt(0); }))], { type: research.type });
@@ -246,7 +258,6 @@
         link.click();
     }
 
-    // Function to add a degree to the selected student
     function addDegree() {
         const degreeInput = document.getElementById('degreeInput');
         const degree = degreeInput.value.trim();
@@ -256,10 +267,7 @@
             return;
         }
 
-        // Get the student data from localStorage
         const students = JSON.parse(localStorage.getItem('students')) || [];
-
-        // Get selected checkboxes
         const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
         if (selectedCheckboxes.length === 0) {
             showAlert('Please select at least one student.', 'error');
@@ -271,61 +279,50 @@
             students[studentIndex].degree = degree;
         });
 
-        // Save the updated students array back to localStorage
         localStorage.setItem('students', JSON.stringify(students));
-
-        // Reload the data to reflect the changes
         loadStudentsData();
-
-        // Clear the input field
         degreeInput.value = '';
-        showAlert('Degree added successfully!', 'success');
+        showAlert('Degree added successfully! 🎓', 'success');
     }
 
-    // Function to delete selected students
     function deleteSelected() {
-        // Get selected checkboxes
+        if (!confirm('Are you sure you want to delete the selected students?')) {
+            return;
+        }
+
+        const students = JSON.parse(localStorage.getItem('students')) || [];
         const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+
         if (selectedCheckboxes.length === 0) {
             showAlert('Please select at least one student to delete.', 'error');
             return;
         }
 
-        // Get the student data from localStorage
-        let students = JSON.parse(localStorage.getItem('students')) || [];
+        const studentsToDelete = Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.index);
+        const filteredStudents = students.filter((_, index) => !studentsToDelete.includes(String(index)));
 
-        // Remove selected students
-        const remainingStudents = students.filter((student, index) => {
-            return !Array.from(selectedCheckboxes).some(checkbox => checkbox.dataset.index == index);
-        });
-
-        // Save the updated students array back to localStorage
-        localStorage.setItem('students', JSON.stringify(remainingStudents));
-
-        // Reload the data to reflect the changes
+        localStorage.setItem('students', JSON.stringify(filteredStudents));
         loadStudentsData();
-
-        showAlert('Selected students deleted successfully!', 'success');
+        showAlert('Selected students deleted successfully! 🗑️', 'success');
     }
 
-    // Function to toggle all checkboxes
-    function selectAllCheckboxes() {
-        const selectAll = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.student-checkbox');
-        checkboxes.forEach(checkbox => checkbox.checked = selectAll.checked);
-    }
-
-    // Function to show alert messages
     function showAlert(message, type) {
-        const alertElement = document.getElementById('alertMessage');
-        alertElement.textContent = message;
-        alertElement.style.display = 'block';
-        alertElement.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
-        alertElement.style.color = type === 'error' ? '#721c24' : '#155724';
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = message;
+        alertMessage.style.display = 'block';
+        alertMessage.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+        alertMessage.style.color = type === 'success' ? '#155724' : '#721c24';
     }
 
-    // Load student data when the page is loaded
-    window.onload = loadStudentsData;
+    function selectAllCheckboxes() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.student-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+
+    loadStudentsData();
 </script>
 
 </body>
