@@ -205,9 +205,9 @@
                 const degreeCell = row.insertCell(4);
                 degreeCell.textContent = student.degree || 'N/A';
 
-                // Rating cell
+                // Rating and note cell
                 const ratingCell = row.insertCell(5);
-                const starRating = createStarRating(student.rating || 0, index);
+                const starRating = createStarRating(student.rating || 0, index, student.note);
                 ratingCell.appendChild(starRating);
 
                 // Action cell
@@ -224,10 +224,11 @@
         }
     }
 
-    function createStarRating(rating, studentIndex) {
+    // Create star rating and allow adding notes
+    function createStarRating(rating, studentIndex, note = '') {
         const starContainer = document.createElement('div');
         starContainer.className = 'star-rating';
-        
+
         for (let i = 1; i <= 5; i++) {
             const star = document.createElement('span');
             star.className = 'star';
@@ -239,16 +240,38 @@
             starContainer.appendChild(star);
         }
 
+        // Add note input if a rating is given (display note field only if rating is set)
+        if (rating > 0) {
+            const noteInput = document.createElement('input');
+            noteInput.type = 'text';
+            noteInput.className = 'input-field';
+            noteInput.placeholder = 'Add a note...';
+            noteInput.value = note || ''; // Pre-fill with existing note
+            noteInput.onblur = () => saveNote(studentIndex, noteInput.value);
+            starContainer.appendChild(noteInput);
+        }
+
         return starContainer;
     }
 
+    // Save the note in localStorage
+    function saveNote(studentIndex, note) {
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+        students[studentIndex].note = note;
+        localStorage.setItem('students', JSON.stringify(students));
+        loadStudentsData(); // Reload to display the updated notes
+    }
+
+    // Set the rating and store in localStorage
     function setRating(studentIndex, rating) {
         const students = JSON.parse(localStorage.getItem('students')) || [];
         students[studentIndex].rating = rating;
+        students[studentIndex].note = ''; // Clear the note when the rating is changed
         localStorage.setItem('students', JSON.stringify(students));
         loadStudentsData(); // Reload to display the updated ratings
     }
 
+    // Download research file
     function downloadFile(research) {
         const fileContent = research.content;
         const blob = new Blob([new Uint8Array(atob(fileContent).split("").map(function(c) { return c.charCodeAt(0); }))], { type: research.type });
@@ -258,6 +281,7 @@
         link.click();
     }
 
+    // Add degree to selected students
     function addDegree() {
         const degreeInput = document.getElementById('degreeInput');
         const degree = degreeInput.value.trim();
@@ -285,6 +309,7 @@
         showAlert('Degree added successfully! 🎓', 'success');
     }
 
+    // Delete selected students
     function deleteSelected() {
         if (!confirm('Are you sure you want to delete the selected students?')) {
             return;
@@ -306,6 +331,7 @@
         showAlert('Selected students deleted successfully! 🗑️', 'success');
     }
 
+    // Show alert message
     function showAlert(message, type) {
         const alertMessage = document.getElementById('alertMessage');
         alertMessage.textContent = message;
@@ -314,6 +340,7 @@
         alertMessage.style.color = type === 'success' ? '#155724' : '#721c24';
     }
 
+    // Select/Deselect all checkboxes
     function selectAllCheckboxes() {
         const selectAllCheckbox = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.student-checkbox');
@@ -322,6 +349,7 @@
         });
     }
 
+    // Load the student data when the page is loaded
     loadStudentsData();
 </script>
 
