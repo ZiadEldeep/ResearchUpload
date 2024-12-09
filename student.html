@@ -162,10 +162,10 @@
         <div id="alertMessage" class="alert"></div>
 
         <form id="studentForm">
-            <label for="name">Name</label>
+            <label for="name">FirstName</label>
             <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-            <label for="details">Other Details</label>
+            <label for="details">LastName</label>
             <input type="text" id="details" name="details" placeholder="Enter other details" required>
 
             <label for="research">Research Paper</label>
@@ -244,10 +244,12 @@
 
             if (foundStudent) {
                 resultContent.innerHTML = ` 
-                    <strong>Name:</strong> ${foundStudent.name} <br>
-                    <strong>Details:</strong> ${foundStudent.details} <br>
-                    <strong>Notes:</strong> ${foundStudent.notes} <br>
+                    <strong>FirstName:</strong> ${foundStudent.name} <br>
+                    <strong>LastName:</strong> ${foundStudent.details} <br>
+                    <strong>UniversityNotes:</strong> ${foundStudent.note} <br>
+                    <strong>EvaluatorNotes:</strong> ${foundStudent.notes} <br>
                     <strong>Research File:</strong> ${foundStudent.research.name} <br>
+                    <strong>Rating Stars:</strong> ${foundStudent.rating} <br>
                     <a href="data:${foundStudent.research.type};base64,${foundStudent.research.content}" download="${foundStudent.research.name}">
                         Download Research Paper
                     </a>

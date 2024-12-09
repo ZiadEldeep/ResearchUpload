@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctors</title>
+    <title>Evaluator</title>
     <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -107,7 +107,7 @@
 <body>
 
 <div class="container">
-    <h2>Doctors Site</h2>
+    <h2>Evaluator</h2>
 
     <!-- Add Degree Form -->
     <div class="form-container">
@@ -127,10 +127,11 @@
         <thead>
             <tr>
                 <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()"></th>
-                <th>Name</th>
-                <th>Other Details</th>
+                <th>FirstName</th>
+                <th>LastName</th>
                 <th>Research Paper</th>
                 <th>Degree</th>
+                <th>Notes</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -179,8 +180,21 @@
                 const degreeCell = row.insertCell(4);
                 degreeCell.textContent = student.degree || 'N/A';
 
+                // Notes cell
+                const notesCell = row.insertCell(5);
+                const notesInput = document.createElement('input');
+                notesInput.type = 'text';
+                notesInput.value = student.notes || '';
+                notesInput.placeholder = 'Add notes...';
+                notesInput.className = 'notes-input';
+                notesInput.dataset.index = index;
+                notesInput.addEventListener('blur', function() {
+                    updateNotes(index, notesInput.value);
+                });
+                notesCell.appendChild(notesInput);
+
                 // Action cell
-                const actionCell = row.insertCell(5);
+                const actionCell = row.insertCell(6);
                 const downloadButton = document.createElement('button');
                 downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
                 downloadButton.onclick = function() {
@@ -201,6 +215,13 @@
         link.href = URL.createObjectURL(blob);
         link.download = research.name;
         link.click();
+    }
+
+    // Function to update the notes of a student
+    function updateNotes(index, notes) {
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+        students[index].notes = notes; // Update the notes for the student
+        localStorage.setItem('students', JSON.stringify(students)); // Save the updated data to localStorage
     }
 
     // Function to add a degree to the selected student

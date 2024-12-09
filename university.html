@@ -153,8 +153,8 @@
         <thead>
             <tr>
                 <th><input type="checkbox" id="selectAll" onclick="selectAllCheckboxes()" aria-label="Select All"></th>
-                <th>Name</th>
-                <th>Other Details</th>
+                <th>FirstName</th>
+                <th>LastName</th>
                 <th>Research Paper</th>
                 <th>Degree</th>
                 <th>Rating <span role="img" aria-label="star emoji">⭐</span></th>
@@ -225,18 +225,18 @@
         return container;
     }
 
-    function setRating(index, rating) {
-        const students = JSON.parse(localStorage.getItem('students')) || [];
-        students[index].rating = rating;
-        localStorage.setItem('students', JSON.stringify(students));
-        loadStudentsData();
-    }
-
     function saveNote(index, note) {
         const students = JSON.parse(localStorage.getItem('students')) || [];
         students[index].note = note;  // Save the note into the student's record
         localStorage.setItem('students', JSON.stringify(students));  // Save the updated students data in localStorage
         loadStudentsData(); // Re-load the students data to reflect the change
+    }
+
+    function setRating(index, rating) {
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+        students[index].rating = rating;
+        localStorage.setItem('students', JSON.stringify(students));
+        loadStudentsData();
     }
 
     function downloadFile(index) {
