@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Information Form</title>
-    <!-- Add Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -23,7 +22,6 @@
             animation: fadeIn 1s ease-out;
         }
 
-        /* Fade-in animation for page */
         @keyframes fadeIn {
             0% { opacity: 0; }
             100% { opacity: 1; }
@@ -41,7 +39,6 @@
             animation: formFadeIn 1s ease-out;
         }
 
-        /* Form fade-in animation */
         @keyframes formFadeIn {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -74,6 +71,7 @@
 
         input[type="text"],
         input[type="file"],
+        textarea,
         button {
             width: 100%;
             padding: 14px;
@@ -87,18 +85,14 @@
 
         input[type="text"]:focus,
         input[type="file"]:focus,
+        textarea:focus,
         button:hover {
             border-color: #4CAF50;
             outline: none;
             box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
         }
 
-        input[type="text"] {
-            background-color: #f9fafb;
-        }
-
         input[type="file"] {
-            background-color: #f9fafb;
             cursor: pointer;
         }
 
@@ -133,7 +127,6 @@
             display: none;
             font-size: 14px;
             text-align: center;
-            animation: alertFadeIn 0.5s ease-in-out;
         }
 
         .alert.success {
@@ -142,66 +135,85 @@
             border-color: #c3e6cb;
         }
 
-        /* Alert fade-in animation */
-        @keyframes alertFadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .result-container h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .result-container p {
+            font-size: 16px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-
     <div class="form-container">
         <h2>Student Information Form</h2>
 
-        <!-- Alert message -->
         <div id="alertMessage" class="alert"></div>
 
         <form id="studentForm">
             <label for="name">Name</label>
-            <div class="input-wrapper">
-                <i class="fas fa-user icon"></i>
-                <input type="text" id="name" name="name" placeholder="Enter your name" required>
-            </div>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
             <label for="details">Other Details</label>
-            <div class="input-wrapper">
-                <i class="fas fa-info-circle icon"></i>
-                <input type="text" id="details" name="details" placeholder="Enter other details" required>
-            </div>
+            <input type="text" id="details" name="details" placeholder="Enter other details" required>
 
             <label for="research">Research Paper</label>
-            <div class="input-wrapper">
-                <i class="fas fa-file-upload icon"></i>
-                <input type="file" id="research" name="research" accept=".pdf, .doc, .docx" required>
-            </div>
+            <input type="file" id="research" name="research" accept=".pdf, .doc, .docx" required>
+
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" placeholder="Enter any additional notes" rows="4"></textarea>
 
             <button type="submit">
                 <i class="fas fa-paper-plane icon"></i> Submit
             </button>
         </form>
+
+        <!-- Search Section -->
+        <div>
+            <label for="searchName">Search by Name</label>
+            <input type="text" id="searchName" placeholder="Enter student name">
+            <button id="searchButton">
+                <i class="fas fa-search icon"></i> Search
+            </button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultContainer" class="result-container">
+            <h3>Search Result:</h3>
+            <p id="resultContent"></p>
+        </div>
     </div>
 
     <script>
+        // Submit form logic
         document.getElementById('studentForm').addEventListener('submit', function(event) {
-            event.preventDefault();  // Prevent form submission
+            event.preventDefault();
 
-            // Get the form input values
             const name = document.getElementById('name').value;
             const details = document.getElementById('details').value;
             const researchFile = document.getElementById('research').files[0];
+            const notes = document.getElementById('notes').value;
 
-            // Check if a file is uploaded
             if (researchFile) {
                 const reader = new FileReader();
                 reader.onload = function() {
-                    // Get the file content as base64
                     const fileContent = reader.result.split(',')[1];
 
-                    // Create an object to store in localStorage
                     const studentData = {
                         name: name,
                         details: details,
+                        notes: notes,
                         research: {
                             name: researchFile.name,
                             type: researchFile.type,
@@ -210,29 +222,51 @@
                         }
                     };
 
-                    // Store the data in localStorage (you can store multiple students if needed)
                     let students = JSON.parse(localStorage.getItem('students')) || [];
                     students.push(studentData);
                     localStorage.setItem('students', JSON.stringify(students));
 
-                    // Show success alert
                     showAlert('Student data saved successfully!', 'success');
-                    document.getElementById('studentForm').reset(); // Clear the form
+                    document.getElementById('studentForm').reset();
                 };
-
-                reader.readAsDataURL(researchFile); // Convert file to base64 format
-            } else {
-                showAlert('Please upload a research file.', 'error');
+                reader.readAsDataURL(researchFile);
             }
         });
 
-        // Function to show alert messages
+        // Search functionality
+        document.getElementById('searchButton').addEventListener('click', function() {
+            const searchName = document.getElementById('searchName').value.trim();
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+
+            const foundStudent = students.find(student => student.name.toLowerCase() === searchName.toLowerCase());
+
+            if (foundStudent) {
+                resultContent.innerHTML = ` 
+                    <strong>Name:</strong> ${foundStudent.name} <br>
+                    <strong>Details:</strong> ${foundStudent.details} <br>
+                    <strong>Notes:</strong> ${foundStudent.notes} <br>
+                    <strong>Research File:</strong> ${foundStudent.research.name} <br>
+                    <a href="data:${foundStudent.research.type};base64,${foundStudent.research.content}" download="${foundStudent.research.name}">
+                        Download Research Paper
+                    </a>
+                `;
+                resultContainer.style.display = 'block';
+                showAlert('Student found successfully!', 'success');
+            } else {
+                resultContent.textContent = '';
+                resultContainer.style.display = 'none';
+                showAlert('Student not found. Please try another name.', 'error');
+            }
+        });
+
+        // Function to show alerts
         function showAlert(message, type) {
             const alertElement = document.getElementById('alertMessage');
             alertElement.textContent = message;
+            alertElement.className = `alert ${type === 'error' ? '' : 'success'}`;
             alertElement.style.display = 'block';
-            alertElement.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
-            alertElement.style.color = type === 'error' ? '#721c24' : '#155724';
         }
     </script>
 </body>

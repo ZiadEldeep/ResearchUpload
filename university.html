@@ -170,187 +170,107 @@
 </div>
 
 <script>
+    // Load students' data on page load
     function loadStudentsData() {
         const students = JSON.parse(localStorage.getItem('students')) || [];
 
-        if (students.length > 0) {
-            const tableBody = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
-            tableBody.innerHTML = ''; // Clear any existing rows
+        const tableBody = document.querySelector("#studentsTable tbody");
+        tableBody.innerHTML = ''; // Clear the table
 
-            students.forEach((student, index) => {
-                // Create a new row
-                const row = tableBody.insertRow();
-                
-                // Checkbox cell
-                const checkboxCell = row.insertCell(0);
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'student-checkbox';
-                checkbox.dataset.index = index; // Store the student index in the checkbox
-                checkboxCell.appendChild(checkbox);
-                
-                // Name cell
-                const nameCell = row.insertCell(1);
-                nameCell.textContent = student.name;
-                
-                // Details cell
-                const detailsCell = row.insertCell(2);
-                detailsCell.textContent = student.details;
+        students.forEach((student, index) => {
+            const row = tableBody.insertRow();
 
-                // Research file cell
-                const fileCell = row.insertCell(3);
-                fileCell.textContent = student.research.name;
+            // Checkbox
+            const checkboxCell = row.insertCell(0);
+            checkboxCell.innerHTML = `<input type="checkbox" class="student-checkbox" data-index="${index}">`;
 
-                // Degree cell
-                const degreeCell = row.insertCell(4);
-                degreeCell.textContent = student.degree || 'N/A';
+            // Name
+            row.insertCell(1).textContent = student.name || 'N/A';
 
-                // Rating and note cell
-                const ratingCell = row.insertCell(5);
-                const starRating = createStarRating(student.rating || 0, index, student.note);
-                ratingCell.appendChild(starRating);
+            // Other Details
+            row.insertCell(2).textContent = student.details || 'N/A';
 
-                // Action cell
-                const actionCell = row.insertCell(6);
-                const downloadButton = document.createElement('button');
-                downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
-                downloadButton.onclick = function() {
-                    downloadFile(student.research);
-                };
-                actionCell.appendChild(downloadButton);
-            });
-        } else {
-            showAlert('No student data found.', 'error');
-        }
+            // Research Paper
+            row.insertCell(3).textContent = student.research?.name || 'N/A';
+
+            // Degree
+            row.insertCell(4).textContent = student.degree || 'N/A';
+
+            // Star Rating
+            const ratingCell = row.insertCell(5);
+            ratingCell.appendChild(createStarRating(student.rating || 0, index, student.note || ''));
+
+            // Action
+            const actionCell = row.insertCell(6);
+            actionCell.innerHTML = `<button onclick="downloadFile(${index})"><i class="fas fa-download"></i> Download</button>`;
+        });
     }
 
-    // Create star rating and allow adding notes
-    function createStarRating(rating, studentIndex, note = '') {
-        const starContainer = document.createElement('div');
-        starContainer.className = 'star-rating';
-
+    function createStarRating(rating, index, note) {
+        const container = document.createElement('div');
+        container.className = 'star-rating';
         for (let i = 1; i <= 5; i++) {
             const star = document.createElement('span');
-            star.className = 'star';
-            star.innerHTML = '★';
-            if (i <= rating) {
-                star.classList.add('selected');
-            }
-            star.onclick = () => setRating(studentIndex, i);
-            starContainer.appendChild(star);
+            star.className = 'star' + (i <= rating ? ' selected' : '');
+            star.textContent = '★';
+            star.onclick = () => setRating(index, i);
+            container.appendChild(star);
         }
-
-        // Add note input if a rating is given (display note field only if rating is set)
-        if (rating > 0) {
-            const noteInput = document.createElement('input');
-            noteInput.type = 'text';
-            noteInput.className = 'input-field';
-            noteInput.placeholder = 'Add a note...';
-            noteInput.value = note || ''; // Pre-fill with existing note
-            noteInput.onblur = () => saveNote(studentIndex, noteInput.value);
-            starContainer.appendChild(noteInput);
-        }
-
-        return starContainer;
+        const noteInput = document.createElement('input');
+        noteInput.className = 'input-field';
+        noteInput.value = note || '';  // If no note, set it as an empty string
+        noteInput.placeholder = "Add a note...";
+        noteInput.onblur = () => saveNote(index, noteInput.value);
+        container.appendChild(noteInput);
+        return container;
     }
 
-    // Save the note in localStorage
-    function saveNote(studentIndex, note) {
+    function setRating(index, rating) {
         const students = JSON.parse(localStorage.getItem('students')) || [];
-        students[studentIndex].note = note;
+        students[index].rating = rating;
         localStorage.setItem('students', JSON.stringify(students));
-        loadStudentsData(); // Reload to display the updated notes
+        loadStudentsData();
     }
 
-    // Set the rating and store in localStorage
-    function setRating(studentIndex, rating) {
+    function saveNote(index, note) {
         const students = JSON.parse(localStorage.getItem('students')) || [];
-        students[studentIndex].rating = rating;
-        students[studentIndex].note = ''; // Clear the note when the rating is changed
-        localStorage.setItem('students', JSON.stringify(students));
-        loadStudentsData(); // Reload to display the updated ratings
+        students[index].note = note;  // Save the note into the student's record
+        localStorage.setItem('students', JSON.stringify(students));  // Save the updated students data in localStorage
+        loadStudentsData(); // Re-load the students data to reflect the change
     }
 
-    // Download research file
-    function downloadFile(research) {
-        const fileContent = research.content;
-        const blob = new Blob([new Uint8Array(atob(fileContent).split("").map(function(c) { return c.charCodeAt(0); }))], { type: research.type });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = research.name;
-        link.click();
+    function downloadFile(index) {
+        const students = JSON.parse(localStorage.getItem('students')) || [];
+        alert("Downloading: " + students[index].research?.name);
     }
 
-    // Add degree to selected students
     function addDegree() {
-        const degreeInput = document.getElementById('degreeInput');
-        const degree = degreeInput.value.trim();
-
-        if (degree === '') {
-            showAlert('Please enter a degree.', 'error');
-            return;
-        }
+        const degree = document.getElementById('degreeInput').value.trim();
+        if (!degree) return alert("Please enter a degree.");
 
         const students = JSON.parse(localStorage.getItem('students')) || [];
-        const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
-        if (selectedCheckboxes.length === 0) {
-            showAlert('Please select at least one student.', 'error');
-            return;
-        }
-
-        selectedCheckboxes.forEach(checkbox => {
-            const studentIndex = checkbox.dataset.index;
-            students[studentIndex].degree = degree;
+        document.querySelectorAll('.student-checkbox:checked').forEach(box => {
+            const index = box.dataset.index;
+            students[index].degree = degree;
         });
-
         localStorage.setItem('students', JSON.stringify(students));
         loadStudentsData();
-        degreeInput.value = '';
-        showAlert('Degree added successfully! 🎓', 'success');
     }
 
-    // Delete selected students
     function deleteSelected() {
-        if (!confirm('Are you sure you want to delete the selected students?')) {
-            return;
-        }
-
         const students = JSON.parse(localStorage.getItem('students')) || [];
-        const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
-
-        if (selectedCheckboxes.length === 0) {
-            showAlert('Please select at least one student to delete.', 'error');
-            return;
-        }
-
-        const studentsToDelete = Array.from(selectedCheckboxes).map(checkbox => checkbox.dataset.index);
-        const filteredStudents = students.filter((_, index) => !studentsToDelete.includes(String(index)));
-
-        localStorage.setItem('students', JSON.stringify(filteredStudents));
+        const remaining = students.filter((_, i) =>
+            !document.querySelector(`.student-checkbox[data-index="${i}"]`).checked);
+        localStorage.setItem('students', JSON.stringify(remaining));
         loadStudentsData();
-        showAlert('Selected students deleted successfully! 🗑️', 'success');
     }
 
-    // Show alert message
-    function showAlert(message, type) {
-        const alertMessage = document.getElementById('alertMessage');
-        alertMessage.textContent = message;
-        alertMessage.style.display = 'block';
-        alertMessage.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-        alertMessage.style.color = type === 'success' ? '#155724' : '#721c24';
-    }
-
-    // Select/Deselect all checkboxes
     function selectAllCheckboxes() {
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const checkboxes = document.querySelectorAll('.student-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = selectAllCheckbox.checked;
-        });
+        document.querySelectorAll('.student-checkbox').forEach(checkbox =>
+            checkbox.checked = document.getElementById('selectAll').checked);
     }
 
-    // Load the student data when the page is loaded
-    loadStudentsData();
+    window.onload = loadStudentsData;
 </script>
 
 </body>
