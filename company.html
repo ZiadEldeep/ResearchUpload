@@ -95,6 +95,16 @@
             font-size: 24px;
         }
 
+        /* Download link styling */
+        a.download-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        a.download-link:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
@@ -113,8 +123,8 @@
     <table id="studentsTable">
         <thead>
             <tr>
-                <th>FirstName</th>
-                <th>LastName</th>
+                <th>First Name</th>
+                <th>Last Name</th>
                 <th>Research Paper</th>
                 <th>Rating <span class="emoji" role="img" aria-label="star">⭐</span></th> <!-- New column for rating -->
             </tr>
@@ -138,17 +148,22 @@
                 // Create a new row
                 const row = tableBody.insertRow();
 
-                // Name cell
-                const nameCell = row.insertCell(0);
-                nameCell.textContent = student.name;
+                // First Name cell
+                const firstNameCell = row.insertCell(0);
+                firstNameCell.textContent = student.name;
 
-                // Details cell
-                const detailsCell = row.insertCell(1);
-                detailsCell.textContent = student.details;
+                // Last Name cell
+                const lastNameCell = row.insertCell(1);
+                lastNameCell.textContent = student.details;
 
-                // Research file cell
+                // Research file cell with download link
                 const fileCell = row.insertCell(2);
-                fileCell.textContent = student.research.name;
+                const downloadLink = document.createElement('a');
+                downloadLink.href = student.research.path || '#';
+                downloadLink.textContent = student.research.name || 'Download File';
+                downloadLink.download = student.research.name; // Enables download
+                downloadLink.className = 'download-link';
+                fileCell.appendChild(downloadLink);
 
                 // Rating cell
                 const ratingCell = row.insertCell(3);
