@@ -95,16 +95,21 @@
             font-size: 24px;
         }
 
-        /* Download link styling */
-        a.download-link {
-            color: #007bff;
+        /* Download button styling */
+        .download-btn {
+            display: inline-block;
+            background-color: #17a2b8; /* Light blue */
+            color: #fff;
+            padding: 10px 20px;
             text-decoration: none;
+            border-radius: 5px;
             font-weight: 600;
+            text-align: center;
+            transition: background-color 0.3s ease;
         }
-        a.download-link:hover {
-            text-decoration: underline;
+        .download-btn:hover {
+            background-color: #138496; /* Darker blue on hover */
         }
-
     </style>
 </head>
 <body>
@@ -156,14 +161,14 @@
                 const lastNameCell = row.insertCell(1);
                 lastNameCell.textContent = student.details;
 
-                // Research file cell with download link
+                // Research file cell with download button
                 const fileCell = row.insertCell(2);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = student.research.path || '#';
-                downloadLink.textContent = student.research.name || 'Download File';
-                downloadLink.download = student.research.name; // Enables download
-                downloadLink.className = 'download-link';
-                fileCell.appendChild(downloadLink);
+                const downloadButton = document.createElement('a');
+                downloadButton.href = student.research.path || '#';
+                downloadButton.textContent = 'Download';
+                downloadButton.download = student.research.name;
+                downloadButton.className = 'download-btn';
+                fileCell.appendChild(downloadButton);
 
                 // Rating cell
                 const ratingCell = row.insertCell(3);
